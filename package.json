@@ -14,7 +14,9 @@
   "dependencies": {
     "@prisma/client": "^6.16.2",
     "cors": "^2.8.5",
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "hashids": "^2.3.0",
+    "ioredis": "^5.8.0"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",
