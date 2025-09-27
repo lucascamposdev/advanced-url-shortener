@@ -12,13 +12,15 @@ class UrlController {
       res.status(500).json({ message: err.message });
     }
   }
-
+  
   static async createHash(req: Request, res: Response){
     const { url } = req.body
-
+    
     try{
       const createdHash = await UrlService.createHash(url)
-      res.status(201).json(createdHash)
+
+      const serverUrl = `${req.protocol}://${req.get("host")}/${createdHash.hash}`;
+      res.status(201).json(serverUrl)
     } catch (err: any) {
       res.status(500).json({  message: err.message })
     }
