@@ -17,10 +17,7 @@ class UrlService {
 
       return hashid
     } catch (error) {
-      const rnd = crypto.randomBytes(6)             
-      const num = Number(BigInt("0x" + rnd.toString("hex")))
-      const hashids = new Hashids(UrlService.HASHIDS_SALT, 7)
-      return hashids.encode(num)                     
+      throw new Error("Impossible to generate hash, please try again later.")                   
     }
   }
 
@@ -50,8 +47,9 @@ class UrlService {
   }
 
   async retryCreateHash(url: string) {
-    const hash = await UrlService.generateHash()
     try {
+      const hash = await UrlService.generateHash()
+      
       return await prisma.url.create({
         data: { url, hash }
       })
