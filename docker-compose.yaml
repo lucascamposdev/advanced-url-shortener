@@ -10,6 +10,7 @@ services:
     env_file:
       - ./redirect-service/.env
     depends_on:
+      - redirect-redis
       - db
 
   shortener:
@@ -22,6 +23,7 @@ services:
     env_file:
       - ./shortener-service/.env
     depends_on:
+      - shortener-redis
       - db
 
   nginx:
@@ -45,13 +47,25 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
 
-  redis:
+  shortener-redis:
     image: redis:7
+    ports:
+      - "6377:6379"
     restart: always
     command: ["redis-server", "--appendonly", "yes"]
     volumes:
-      - redisdata:/data
+      - shortener-redis-data:/data
+
+  redirect-redis:
+    image: redis:7
+    ports:
+      - "6378:6379"
+    restart: always
+    command: ["redis-server"]
+    volumes:
+      - redirect-redis-data:/data
 
 volumes:
   pgdata:
-  redisdata:
+  shortener-redis-data:
+  redirect-redis-data:

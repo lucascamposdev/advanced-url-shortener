@@ -6,8 +6,8 @@ class UrlController {
     const { hash } = req.params;
 
     try {
-      const urlRecord = await UrlService.getUrlByHash(hash);
-      res.redirect(urlRecord.url);
+      const url = await UrlService.getUrlByHash(hash);
+      res.redirect(url);
     } catch (err: any) {
       res.status(500).json({ message: err.message });
     }
