@@ -3,7 +3,6 @@ import UrlService from "../services/url.service"
 
 class UrlController {
   static async createHash(req: Request, res: Response) {
-    console.log(req.body)
     const { url } = req.body
 
     try {

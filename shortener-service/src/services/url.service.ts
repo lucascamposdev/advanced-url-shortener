@@ -1,7 +1,6 @@
-import crypto from "crypto"
 import Hashids from "hashids"
 import prisma from "../config/prisma"
-import redis from "../lib/redisClient"
+import redis from "../config/redisClient"
 
 class UrlService {
   private static COUNTER_KEY = "hash:counter"
