@@ -11,8 +11,8 @@ RUN npm install
 # Copia o restante do projeto
 COPY . .
 
-RUN npx prisma generate && npm run build
+RUN npm run build
 
 EXPOSE 3001
 
-CMD ["sh", "-c", "npx prisma migrate deploy && node dist/index.js"]
+CMD ["sh", "-c", "node dist/index.js"]

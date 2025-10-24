@@ -1,4 +1,4 @@
-import prisma from "../config/prisma"
+import pgBouncer from "../config/pgBouncer";
 import { redisClient } from "../config/redisClient"
 
 class UrlService {
@@ -10,11 +10,13 @@ class UrlService {
       return cachedHash
     }
 
-    const [ found ] = await prisma.$queryRaw<any[]>`
-      SELECT "url" FROM "Url" 
-      WHERE "hash" = ${hash} 
-      LIMIT 1
-    `
+    const { rows } = await pgBouncer.query(
+      `SELECT "url" FROM "Url" WHERE "hash" = $1 LIMIT 1`,
+      [hash]
+    );
+    
+    const found = rows[0];
+
     if (!found) {
       throw new Error("URL not found")
     }

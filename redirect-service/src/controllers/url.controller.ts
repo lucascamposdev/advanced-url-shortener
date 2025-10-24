@@ -7,7 +7,7 @@ class UrlController {
 
     try {
       const url = await UrlService.getUrlByHash(hash);
-      res.redirect(url);
+      res.redirect(301, url);
     } catch (err: any) {
       res.status(500).json({ message: err.message });
     }

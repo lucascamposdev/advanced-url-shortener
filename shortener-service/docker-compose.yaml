@@ -1,3 +1,4 @@
+
 services:
   redirect:
     build:
@@ -45,17 +46,15 @@ services:
       POSTGRES_DB: url-shortener-db
     volumes:
       - pgdata:/var/lib/postgresql/data
-
+      
   pgbouncer:
-    image: edoburu/pgbouncer:v1.24.1-p1
+    image: pgbouncer/pgbouncer:latest
     container_name: pgbouncer
     restart: always
     depends_on:
       - db
     ports:
       - "6432:6432"
-    environment:
-      DATABASES: "url-shortener-db=host=db port=5432 dbname=url-shortener-db"
     volumes:
       - ./pgbouncer/pgbouncer.ini:/etc/pgbouncer/pgbouncer.ini:ro
       - ./pgbouncer/userlist.txt:/etc/pgbouncer/userlist.txt:ro
