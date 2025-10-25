@@ -49,11 +49,11 @@ class UrlService {
     try {
       const hash = await UrlService.generateHash()
       
-      const createdHash = await prisma.url.create({
+      const created = await prisma.url.create({
         data: { url, hash }
       })
 
-      return createdHash.hash
+      return created.hash
     } catch (error: any) {
       if (!(error?.code === "P2002")) {
         throw error

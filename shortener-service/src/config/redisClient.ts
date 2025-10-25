@@ -8,9 +8,9 @@ const redis = new Redis({
 async function testRedisConnection() {
   try {
     const pong = await redis.ping()
-    console.log("Redis conectado:", pong)
+    console.log("Redis Connected Sucessfully!:", pong)
   } catch (err) {
-    console.error("Erro ao conectar no Redis:", err)
+    console.error("Error connecting to Redis:", err)
   } 
 }
 

@@ -6,7 +6,6 @@ import cors from "cors"
 import http from "http"
 import routes from "./routes/routes"
 import { connectRedis } from "./config/redisClient"
-import { testPgBouncerConnection } from "./config/pgBouncer"
 
 const app = express()
 const server = http.createServer(app)
@@ -19,7 +18,6 @@ app.use(express.json())
 app.use(routes)
 
 const startServer = async (): Promise<void> => {
-  await testPgBouncerConnection()
   await connectRedis()
 
   server.listen(3001, () => {
