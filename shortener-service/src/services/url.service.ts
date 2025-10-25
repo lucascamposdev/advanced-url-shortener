@@ -3,8 +3,8 @@ import prisma from "../config/prisma"
 import redis from "../config/redisClient"
 
 class UrlService {
-  private static COUNTER_KEY = "hash:counter"
-  private static HASHIDS_SALT = process.env.HASHIDS_SALT
+  private static COUNTER_KEY: string = "hash:counter"
+  private static HASHIDS_SALT: string = process.env.HASHIDS_SALT || "this_is_our:secret"
 
   static async generateHash(): Promise<string> {
     try {
@@ -20,7 +20,7 @@ class UrlService {
     }
   }
 
-  async createHash(url: string) {
+  async createHash(url: string): Promise<string> {
     try {
       const hash = await UrlService.generateHash();
 
@@ -28,15 +28,15 @@ class UrlService {
         data: { url, hash }
       })
 
-      return created
+      return created.hash
     } catch (error: any) {
       const isUniqueViolation =
         error?.code === "P2002" || error?.meta?.target?.includes("hash")
       if (isUniqueViolation) {
         for (let i = 0; i < 3; i++) {
-          const retryResult = await this.retryCreateHash(url)
-          if (retryResult) {
-            return retryResult
+          const retryResultHash = await this.retryCreateHash(url)
+          if (retryResultHash) {
+            return retryResultHash
           }
         }
         throw new Error("Impossible to generate hash, please try again later.")
@@ -45,18 +45,20 @@ class UrlService {
     }
   }
 
-  async retryCreateHash(url: string) {
+  async retryCreateHash(url: string): Promise<string | null> {
     try {
       const hash = await UrlService.generateHash()
       
-      return await prisma.url.create({
+      const createdHash = await prisma.url.create({
         data: { url, hash }
       })
+
+      return createdHash.hash
     } catch (error: any) {
       if (!(error?.code === "P2002")) {
         throw error
       }
-      return undefined
+      return null
     }
   }
 }

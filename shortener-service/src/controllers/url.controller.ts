@@ -6,9 +6,9 @@ class UrlController {
     const { url } = req.body
 
     try {
-      const createdHash = await UrlService.createHash(url)
+      const hash = await UrlService.createHash(url)
 
-      const serverUrl = `${req.protocol}://localhost/${createdHash.hash}`
+      const serverUrl = `${req.protocol}://localhost/${hash}`
       res.status(201).json(serverUrl)
     } catch (err: any) {
       res.status(500).json({ message: err.message })

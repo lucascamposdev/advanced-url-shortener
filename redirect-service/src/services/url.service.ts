@@ -1,5 +1,12 @@
+import { QueryResult } from "pg";
 import pgBouncer from "../config/pgBouncer";
 import { redisClient } from "../config/redisClient"
+
+type Url = {
+  id: number
+  hash: string
+  url: string  
+}
 
 class UrlService {
   async getUrlByHash(hash: string): Promise<string> {
@@ -10,7 +17,7 @@ class UrlService {
       return cachedHash
     }
 
-    const { rows } = await pgBouncer.query(
+    const { rows }: QueryResult<Url> = await pgBouncer.query(
       `SELECT "url" FROM "Url" WHERE "hash" = $1 LIMIT 1`,
       [hash]
     );
