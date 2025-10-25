@@ -1,14 +1,14 @@
 # Shortening
----
+
 ### Counter
 
 - O sistema utiliza um contador global armazenado no Redis para gerar identificadores sequenciais que servem como base para a criação dos hashes de URL.
 
-Essa abordagem elimina a necessidade de consultar o banco de dados para verificar a disponibilidade de novos identificadores, garantindo maior eficiência e escalabilidade.
+> Essa abordagem elimina a necessidade de consultar o banco de dados para verificar a disponibilidade de novos identificadores, garantindo maior eficiência e escalabilidade.
 
 - O comando de incremento do Redis (INCR) é atômico, o que assegura que, mesmo com múltiplas instâncias da aplicação em execução, cada requisição receba um valor único e não duplicado.
 
-Dessa forma, a geração de novos hashes permanece consistente e livre de conflitos em ambientes distribuídos.
+> Dessa forma, a geração de novos hashes permanece consistente e livre de conflitos em ambientes distribuídos.
 
 - Como o contador pode atingir valores muito altos ao longo do tempo, os identificadores são tratados como BigInt, evitando problemas de precisão numérica que poderiam ocorrer caso o limite de segurança do tipo Number em JavaScript fosse ultrapassado.
 
@@ -24,21 +24,18 @@ Dessa forma, a geração de novos hashes permanece consistente e livre de confli
 
 
 # Redirecting
----
 
 ### PgBouncer
 
 - Na primeira requisição de redirecionamento, o sistema realiza uma consulta ao banco de dados para localizar a URL original correspondente ao hash recebido.
 Para otimizar o desempenho e garantir alta disponibilidade, é utilizado o PgBouncer, configurado no modo <b>statement</b>.
 
-Essa configuração reduz significativamente a latência e o consumo de memória, além de mitigar problemas de concorrência sob alta carga.
+> Essa configuração reduz significativamente a latência e o consumo de memória, além de mitigar problemas de concorrência sob alta carga.
 Com isso, o serviço é capaz de sustentar altos volumes de leitura — aproximadamente 5.000 requisições por segundo — de forma estável e eficiente.
 
 ### Cache
 
-- Após a primeira consulta de uma URL, o resultado é armazenado em Redis com um TTL de 86.400 segundos (7 dias).
-
-Com isso, as requisições subsequentes são atendidas diretamente a partir do cache, eliminando a necessidade de novas consultas ao banco de dados e proporcionando respostas significativamente mais rápidas.
+- Após a primeira consulta de uma URL, o resultado é armazenado em Redis com um TTL de 86.400 segundos (7 dias). Com isso, as requisições subsequentes são atendidas diretamente a partir do cache, eliminando a necessidade de novas consultas ao banco de dados e proporcionando respostas significativamente mais rápidas.
 <br>
 >Esse mecanismo é especialmente importante em cenários de alto tráfego — por exemplo, quando um influenciador divulga um link e milhares de usuários acessam simultaneamente.
 Dessa forma, apenas a primeira requisição impacta o banco de dados, enquanto as demais são servidas instantaneamente pelo Redis, preservando recursos e garantindo escalabilidade.
@@ -47,13 +44,8 @@ Dessa forma, apenas a primeira requisição impacta o banco de dados, enquanto a
 
 - Ao optar pela resposta HTTP 301 (Moved Permanently), o navegador do usuário armazenará o redirecionamento em cache, evitando que novas requisições sejam enviadas ao servidor para a mesma URL.
 
-Essa abordagem reduz significativamente a carga sobre a infraestrutura e melhora a experiência do usuário, já que o redirecionamento passa a ocorrer localmente e de forma instantânea nas visitas subsequentes.
-<br>
-> No entanto, o código 301 deve ser utilizado apenas quando o redirecionamento for realmente permanente.
-Em cenários onde há coleta de métricas, Analytics ou contadores de visualizações, recomenda-se utilizar o código 302 (Found), permitindo que cada acesso continue sendo processado pelo servidor.
-<br>
+> Essa abordagem reduz significativamente a carga sobre a infraestrutura e melhora a experiência do usuário, já que o redirecionamento passa a ocorrer localmente e de forma instantânea nas visitas subsequentes.
 
----
 
 # Tecnologias utilizadas
 
@@ -62,11 +54,10 @@ Em cenários onde há coleta de métricas, Analytics ou contadores de visualiza�
 - Prisma 
 - Redis 
 - Hashids
-- Nginx
+- Pg
 - PostgreSQL
 - PgBouncer
-
----
+- Nginx
 
 # Como executar o projeto
 
