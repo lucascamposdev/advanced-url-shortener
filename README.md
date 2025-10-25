@@ -62,6 +62,7 @@ Dessa forma, apenas a primeira requisição impacta o banco de dados, enquanto a
 - PostgreSQL
 - PgBouncer
 - Nginx
+- Docker
 
 # Como executar o projeto
 
