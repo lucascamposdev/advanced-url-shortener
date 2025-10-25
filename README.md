@@ -47,6 +47,9 @@ Dessa forma, apenas a primeira requisição impacta o banco de dados, enquanto a
 
 > Essa abordagem reduz significativamente a carga sobre a infraestrutura e melhora a experiência do usuário, já que o redirecionamento passa a ocorrer localmente e de forma instantânea nas visitas subsequentes.
 
+### Rate Limiting
+
+- Para proteger o serviço contra excesso de requisições e evitar sobrecarga no banco de dados ou no servidor, o sistema utiliza rate limiting via Nginx.
 
 # Tecnologias utilizadas
 
