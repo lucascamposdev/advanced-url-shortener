@@ -3,13 +3,12 @@ import { Pool } from "pg"
 const pgBouncer = new Pool({
   host: process.env.PGBOUNCER_HOST,
   port: 6432,
-  user: "docker",
-  password: "docker",
-  database: "url-shortener-db"
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME
 })
 
-export const testConnection = async () => {
-  console.log("start")
+export const testPgBouncerConnection = async (): Promise<void> => {
   try {
     const { rows } = await pgBouncer.query("SELECT current_database();")
     const [res] = rows
