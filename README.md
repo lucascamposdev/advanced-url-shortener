@@ -36,7 +36,6 @@ Com isso, o serviço é capaz de sustentar altos volumes de leitura — aproxima
 ### Cache
 
 - Após a primeira consulta de uma URL, o resultado é armazenado em Redis com um TTL de 86.400 segundos (7 dias). Com isso, as requisições subsequentes são atendidas diretamente a partir do cache, eliminando a necessidade de novas consultas ao banco de dados e proporcionando respostas significativamente mais rápidas.
-<br>
 
 > Esse mecanismo é especialmente importante em cenários de alto tráfego — por exemplo, quando um influenciador divulga um link e milhares de usuários acessam simultaneamente.
 Dessa forma, apenas a primeira requisição impacta o banco de dados, enquanto as demais são servidas instantaneamente pelo Redis, preservando recursos e garantindo escalabilidade.
