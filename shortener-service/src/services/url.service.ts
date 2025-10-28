@@ -1,63 +1,53 @@
 import Hashids from "hashids"
 import prisma from "../config/prisma"
 import redis from "../config/redisClient"
+import { AppError } from "../utils/AppError"
 
 class UrlService {
   private static COUNTER_KEY: string = "hash:counter"
-  private static HASHIDS_SALT: string = process.env.HASHIDS_SALT || "this_is_our:secret"
+  private static HASHIDS_SALT: string =
+    process.env.HASHIDS_SALT || "this_is_our:secret"
 
   static async generateHash(): Promise<string> {
-    try {
-      const idStr = await redis.incr(UrlService.COUNTER_KEY)
-      const id = BigInt(idStr.toString ? idStr.toString() : `${idStr}`)
+    const idStr = await redis.incr(UrlService.COUNTER_KEY)
+    const id = BigInt(idStr.toString ? idStr.toString() : `${idStr}`)
 
-      const hashids = new Hashids(UrlService.HASHIDS_SALT, 7)
-      const hashid = hashids.encode(Number(id))
+    const hashids = new Hashids(UrlService.HASHIDS_SALT, 7)
+    const hashid = hashids.encode(Number(id))
 
-      return hashid
-    } catch (error) {
-      throw new Error("Impossible to generate hash, please try again later.")                   
-    }
+    return hashid
   }
 
   async createHash(url: string): Promise<string> {
     try {
-      const hash = await UrlService.generateHash();
+      const hash = await UrlService.generateHash()
 
       const created = await prisma.url.create({
         data: { url, hash }
       })
 
       return created.hash
-    } catch (error: any) {
-      const isUniqueViolation =
-        error?.code === "P2002" || error?.meta?.target?.includes("hash")
-      if (isUniqueViolation) {
-        for (let i = 0; i < 3; i++) {
-          const retryResultHash = await this.retryCreateHash(url)
-          if (retryResultHash) {
-            return retryResultHash
-          }
+    } catch (error: unknown) {
+      for (let i = 0; i < 3; i++) {
+        const retryResultHash = await this.retryCreateHash(url)
+        if (retryResultHash) {
+          return retryResultHash
         }
-        throw new Error("Impossible to generate hash, please try again later.")
       }
-      throw error
+
+      throw new AppError("Impossible to generate hash, please try again later.")
     }
   }
 
   async retryCreateHash(url: string): Promise<string | null> {
     try {
       const hash = await UrlService.generateHash()
-      
+
       const created = await prisma.url.create({
         data: { url, hash }
       })
-
       return created.hash
-    } catch (error: any) {
-      if (!(error?.code === "P2002")) {
-        throw error
-      }
+    } catch (error: unknown) {
       return null
     }
   }

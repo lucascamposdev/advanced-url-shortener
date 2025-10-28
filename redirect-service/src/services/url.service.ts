@@ -1,6 +1,7 @@
 import { QueryResult } from "pg";
 import pgBouncer from "../config/pgBouncer";
 import { redisClient } from "../config/redisClient"
+import { NotFoundError } from "../utils/AppError";
 
 type Url = {
   id: number
@@ -25,7 +26,7 @@ class UrlService {
     const found = rows[0];
 
     if (!found) {
-      throw new Error("URL not found")
+      throw new NotFoundError("URL not found")
     }
 
     await redisClient.setEx(key, 86400, found.url)
